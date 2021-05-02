@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import helment from 'helmet';
 
 import config from './configurations/config.mjs';
 
@@ -11,6 +12,7 @@ const PORT = config.webPort;
 const app = express();
 
 app.use(bodyParser.json());
+app.use(helment());
 
 // Test route
 app.all('/', (req, res) => {
@@ -19,7 +21,7 @@ app.all('/', (req, res) => {
 
 app.use('/data', DataRouter);
 
-// Error handling
+// Error handler
 app.use((req, res) => {
     return res.status(400).send('Route not found');
 });

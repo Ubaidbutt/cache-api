@@ -102,7 +102,7 @@ describe('Cache API routes', async () => {
     });
 
     describe('/data/keys/:key route', async () => {
-        it ('should return a random string', async () => {
+        it ('should return a random string if the key does not exist', async () => {
             try {
                 const response = await chai.request(app).get('/data/keys/1');
                 response.should.have.status(201);
@@ -115,6 +115,7 @@ describe('Cache API routes', async () => {
 
         it ('should return a value if the key exist', async () => {
             try {
+                // We created a record with AB-1 in the previous test
                 const response = await chai.request(app).get('/data/keys/AB-1');
                 response.should.have.status(200);
                 response.body.data.should.be.a('string');
