@@ -2,7 +2,9 @@ import Data from '../models/data.model.mjs';
 
 import config from '../configurations/config.mjs';
 
+// Constants
 const maxRecordLimit = config.maxCacheLimit;
+const TTL = parseInt(config.timeToLive);
 
 import {nanoid} from 'nanoid';
 
@@ -10,7 +12,7 @@ import {nanoid} from 'nanoid';
 const deleteLeastUsedEntry = async () => {
     try {
         const count = await Data.countDocuments({});
-        console.log('Count: ', count); 
+        console.log('Record count: ', count); 
         if (count >= maxRecordLimit) {
             const leastUsedRecord = await Data.findOne({}, {}, { sort: { 'updatedAt' : 1 } });
             console.log('Least used record: ', leastUsedRecord);
@@ -22,6 +24,7 @@ const deleteLeastUsedEntry = async () => {
     }
 }
 
+// A route that returns a list of all the keys in an array
 const getAllKeys = async (req, res) => {
     try {
         const data = await Data.find({}).select('key -_id').lean();
@@ -32,6 +35,7 @@ const getAllKeys = async (req, res) => {
     }
 }
 
+// Route to create a record in the cache database - 'key' and 'value' are required parameters
 const createData = async (req, res) => {
     try {
         const { key, value } = req.body;
@@ -41,37 +45,40 @@ const createData = async (req, res) => {
         const data = await Data.findOne({key});
         if (!data) {
             await deleteLeastUsedEntry();
-            const ttl = Date.now() + 3600000; // 1 hour
+            const ttl = Date.now() + TTL;
             const createdData = await Data.create({key, value, ttl});
             return res.status(201).send ({success: true, data: createdData});
         } else {
             await Data.findOneAndUpdate({key: key}, {$set: {value: value}}, {new: true, useFindAndModify: false});
-            return res.status(204).send({success: true});
+            return res.status(204).end();
         }
     } catch(err) {
         return res.status(500).send({success: false, error: err.message});
     }
 }
 
+// Route to delete all the keys from the cache
 const removeAllKeys = async (req, res) => {
     try {
         await Data.deleteMany({});
-        return res.status(204).send({success: true});
+        return res.status(204).end();
     } catch(err) {
         return res.status(500).send({success: false, error: err.message});
     }
 }
 
+// Route to delete one key from the cache
 const deleteOneKey = async (req, res) => {
     try {
         const key = req.params.key;
         await Data.deleteOne({key: key});
-        return res.status(204).send({success: true});
+        return res.status(204).end();
     } catch(err) {
         return res.status(500).send({success: false, error: err.message});
     }
 }
 
+// Find one specific key from cache
 const getOneKey = async (req, res) => {
     try {
         const key = req.params.key;
@@ -79,10 +86,11 @@ const getOneKey = async (req, res) => {
         if (!data) {
             console.log('Cache miss');
             const value = nanoid(10);
+            console.log('Random value: ', value);
             const dataObject = {
                 key,
                 value,
-                ttl: Date.now() + 3600000
+                ttl: Date.now() + TTL
             };
             const data = await Data.findOne({key});
             if (!data) {
@@ -91,11 +99,11 @@ const getOneKey = async (req, res) => {
                 return res.status(201).send ({success: true, data: createdData.value});
             } else {
                 const updatedData = await Data.findOneAndUpdate({key: key}, {$set: {value: value}}, {new: true, useFindAndModify: false});
-                return res.status(204).send({success: true, data: updatedData.value});
+                return res.status(200).send({success: true, data: updatedData.value});
             }
         }
         console.log('Cache hit');
-        await Data.findOneAndUpdate ({key: key}, {$set: {ttl: Date.now()+36000}}, {new: true, useFindAndModify: false});
+        await Data.findOneAndUpdate ({key: key}, {$set: {ttl: Date.now()+TTL}}, {new: true, useFindAndModify: false});
         return res.status(200).send({success: true, data: data.value});
     } catch(err) {
         return res.status(500).send({success: false, error: err.message});

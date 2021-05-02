@@ -69,6 +69,21 @@ describe('Cache API routes', async () => {
             }
         });
 
+        it('should update the value if the key already exists', async () => {
+            try {
+                const dummyObject = {
+                    key: 'AB-1',
+                    value: 'Ubaid Updated'
+                };
+                const response = await chai.request(app).post('/data')
+                    .set('content-type', 'application/json')
+                    .send(dummyObject);
+                response.should.have.status(204);
+            } catch(err) {
+                throw new Error(err);
+            }
+        });
+
         it('should throw a 400 error if required fields are not provided', async () => {
             try {
                 const dummyObject = {
@@ -90,9 +105,18 @@ describe('Cache API routes', async () => {
         it ('should return a random string', async () => {
             try {
                 const response = await chai.request(app).get('/data/keys/1');
-                console.log('Response: ', response.body);
                 response.should.have.status(201);
                 response.body.success.should.be.true;
+                response.body.data.should.be.a('string');
+            } catch (err) {
+                throw new Error(err);
+            }
+        });
+
+        it ('should return a value if the key exist', async () => {
+            try {
+                const response = await chai.request(app).get('/data/keys/AB-1');
+                response.should.have.status(200);
                 response.body.data.should.be.a('string');
             } catch (err) {
                 throw new Error(err);

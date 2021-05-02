@@ -23,6 +23,7 @@ const schema = mongoose.Schema(
   }
 );
 
+schema.index({key: 1}, {unique: true});
 const Data = mongoose.model('Data', schema);
 
 export default Data;
