@@ -1,5 +1,5 @@
 import {
-    describe, it, before
+    describe, it, before, after
 } from 'mocha';
 
 import Data from '../models/data.model.mjs';
@@ -14,6 +14,14 @@ chai.use(chaiHttp);
 
 describe('Cache API routes', async () => {
     before(async () => {
+        try {
+            await Data.deleteMany();
+        } catch(err) {
+            throw new Error(err);
+        }
+    });
+
+    after(async () => {
         try {
             await Data.deleteMany();
         } catch(err) {

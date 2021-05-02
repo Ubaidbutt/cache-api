@@ -45,7 +45,7 @@ const createCacheRecord = async (object = null) => {
             const createdData = await Data.create({key, value, ttl});
             return {status: 201, data: createdData};
         } else {
-            const updatedData = await Data.findOneAndUpdate({key: key}, {$set: {value: value}}, {new: true, useFindAndModify: false});
+            const updatedData = await Data.findOneAndUpdate({key: key}, {$set: {value: value, ttl: Date.now() + TTL}}, {new: true, useFindAndModify: false});
             return {status: 204, data: updatedData};
         }
     } catch(err) {
