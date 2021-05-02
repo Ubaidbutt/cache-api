@@ -42,3 +42,9 @@ I have divided the project into the following folders/structure:
 		* This endpoint will return in a cache miss if they key does not exists or the Time to Live (TTL) has passed - in that case - the endpoint will create a 204 or 201 response depending upon the scenario
 	* DELETE
 		* This endpoint will simply delete the specified key from the cache
+
+### IMPORTANT notes
+* Node version
+	* v16.0.0
+* NPM version
+	* 7.10.0
