@@ -12,7 +12,7 @@ import app from '../index.mjs';
 
 chai.use(chaiHttp);
 
-describe('/data/keys Route', async () => {
+describe('Cache API routes', async () => {
     before(async () => {
         try {
             await Data.deleteMany();
@@ -21,18 +21,92 @@ describe('/data/keys Route', async () => {
         }
     });
 
-    before((done) => {
-        app.on("ServerStarted", () => {
-            done();
+    describe('/data/keys route', async () => {
+        it ('should return an empty array of keys', async () => {
+            try {
+                const response = await chai.request(app).get('/data/keys');
+                response.should.have.status(200);
+            } catch (err) {
+                throw new Error(err);
+            }
+        });
+
+        it ('should delete all the keys in the cache', async () => {
+            try {
+                const response = await chai.request(app).delete('/data/keys');
+                response.should.have.status(204);
+            } catch (err) {
+                throw new Error(err);
+            }
+        });
+
+        it ('should return a 405 Method now allowed error', async () => {
+            try {
+                const response = await chai.request(app).put('/data/keys');
+                response.should.have.status(405);
+                response.body.success.should.be.false;
+            } catch (err) {
+                throw new Error(err);
+            }
         });
     });
 
-    it ('should return an empty array of keys', async () => {
-        try {
-            const response = await chai.request(app).get('/data/keys');
-            response.should.have.status(200);
-        } catch (err) {
-            throw new Error(err);
-        }
+    describe('/data route', async () => {
+        it('should create an entry in the cache', async () => {
+            try {
+                const dummyObject = {
+                    key: 'AB-1',
+                    value: 'Ubaid'
+                };
+                const response = await chai.request(app).post('/data')
+                    .set('content-type', 'application/json')
+                    .send(dummyObject);
+                response.should.have.status(201);
+                response.body.success.should.be.true;
+                response.body.data.should.have.ownProperty('_id');
+            } catch(err) {
+                throw new Error(err);
+            }
+        });
+
+        it('should throw a 400 error if required fields are not provided', async () => {
+            try {
+                const dummyObject = {
+                    key: 'AB-1'
+                };
+                const response = await chai.request(app).post('/data')
+                    .set('content-type', 'application/json')
+                    .send(dummyObject);
+                response.should.have.status(400);
+                response.body.success.should.be.false;
+                response.body.should.have.ownProperty('error');
+            } catch(err) {
+                throw new Error(err);
+            }
+        });
+    });
+
+    describe('/data/keys/:key route', async () => {
+        it ('should return a random string', async () => {
+            try {
+                const response = await chai.request(app).get('/data/keys/1');
+                console.log('Response: ', response.body);
+                response.should.have.status(201);
+                response.body.success.should.be.true;
+                response.body.data.should.be.a('string');
+            } catch (err) {
+                throw new Error(err);
+            }
+        });
+
+        it ('should return a 405 Method now allowed error', async () => {
+            try {
+                const response = await chai.request(app).put('/data/keys/1');
+                response.should.have.status(405);
+                response.body.success.should.be.false;
+            } catch (err) {
+                throw new Error(err);
+            }
+        });
     });
 });

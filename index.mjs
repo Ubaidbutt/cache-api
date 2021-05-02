@@ -2,10 +2,11 @@ import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 
-import config from './config.mjs';
+import config from './configurations/config.mjs';
 
 import DataRouter from './routers/data.router.mjs';
 
+const PORT = config.webPort;
 const app = express();
 app.use(bodyParser.json());
 
@@ -22,8 +23,8 @@ app.use((req, res) => {
 mongoose.connect(config.mongodbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Mongodb connected at PORT 27017.');
-        app.listen(config.webPort, () => console.log(`The web server is up and running at PORT ${config.webPort}`));
-        app.emit('ServerStarted'); // To make sure mocha starts only after the server has started
+        app.listen(PORT, () => console.log(`The web server is up and running at PORT ${PORT}`));
+        app.emit('serverStarted');  // To make sure mocha starts only after the server has started
     })
     .catch((err) => console.log('Mongodb connection error: ', err.message));
 
