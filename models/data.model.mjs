@@ -13,7 +13,8 @@ const schema = mongoose.Schema(
         required: true
     },
     ttl: {
-        type: Date
+        type: Date,
+        required: true
     }
   },
   {

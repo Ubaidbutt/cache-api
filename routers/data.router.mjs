@@ -3,16 +3,23 @@
 import express from 'express';
 const dataRouter = express.Router();
 
+import {
+    getAllKeys, createData, removeAllKeys,
+    deleteOneKey, getOneKey
+} from '../controllers/data.controller.mjs';
+
+dataRouter.post('/', createData);
+
 dataRouter.route('/keys')
-    .get()
-    .post()
-    .put()
-    .delete()
+    .get(getAllKeys)
+    .post((req, res) => res.status(405).send({success: false, error: 'Method not allowed'}))
+    .put((req, res) => res.status(405).send({success: false, error: 'Method not allowed'}))
+    .delete(removeAllKeys);
 
 dataRouter.route('/keys/:key')
-    .get()
-    .post()
-    .put()
-    .delete()
+    .get(getOneKey)
+    .post((req, res) => res.status(405).send({success: false, error: 'Method not allowed'}))
+    .put((req, res) => res.status(405).send({success: false, error: 'Method not allowed'}))
+    .delete(deleteOneKey);
 
 export default dataRouter;
