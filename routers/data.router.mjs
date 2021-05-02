@@ -4,7 +4,7 @@ import express from 'express';
 const dataRouter = express.Router();
 
 import {
-    getAllKeys, createData, removeAllKeys,
+    getAllKeys, createData, deleteAllKeys,
     deleteOneKey, getOneKey
 } from '../controllers/data.controller.mjs';
 
@@ -21,7 +21,7 @@ dataRouter.route('/keys')
     .get(getAllKeys)
     .post((req, res) => res.status(405).send({success: false, error: 'Method not allowed'}))
     .put((req, res) => res.status(405).send({success: false, error: 'Method not allowed'}))
-    .delete(removeAllKeys);
+    .delete(deleteAllKeys);
 
 // All requests coming at : /data/keys/:keyId
 dataRouter.route('/keys/:key')

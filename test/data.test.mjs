@@ -99,6 +99,25 @@ describe('Cache API routes', async () => {
                 throw new Error(err);
             }
         });
+
+        it('should throw a 400 error if the data type is not string type', async () => {
+            try {
+                const dummyObject = {
+                    key: 123,
+                    value: {
+                        name: 'test'
+                    }
+                };
+                const response = await chai.request(app).post('/data')
+                    .set('content-type', 'application/json')
+                    .send(dummyObject);
+                response.should.have.status(400);
+                response.body.success.should.be.false;
+                response.body.should.have.ownProperty('error');
+            } catch(err) {
+                throw new Error(err);
+            }
+        });
     });
 
     describe('/data/keys/:key route', async () => {

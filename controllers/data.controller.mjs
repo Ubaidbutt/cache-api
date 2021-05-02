@@ -35,6 +35,9 @@ const createCacheRecord = async (object = null) => {
         if (key == null || value == null) {
             return {status: 400, error: 'key and value both are required fields.'}
         }
+        if (typeof(key) !== 'string' || typeof(value) !== 'string') {
+            return {status: 400, error: 'key and value both should be string type'}
+        }
         const data = await Data.findOne({key});
         if (!data) {
             await deleteLeastUsedEntry();
@@ -79,7 +82,7 @@ const createData = async (req, res) => {
 }
 
 // Route to delete all the keys from the cache
-const removeAllKeys = async (req, res) => {
+const deleteAllKeys = async (req, res) => {
     try {
         await Data.deleteMany({});
         return res.status(204).end();
@@ -132,5 +135,5 @@ const getOneKey = async (req, res) => {
 
 export {
     getAllKeys, createData, 
-    removeAllKeys, deleteOneKey, getOneKey
+    deleteAllKeys, deleteOneKey, getOneKey
 };

@@ -24,6 +24,6 @@ const schema = mongoose.Schema(
 );
 
 schema.index({key: 1}, {unique: true});
-const Data = mongoose.model('Data', schema);
+const Data = mongoose.model('Cache', schema);
 
 export default Data;
