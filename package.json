@@ -1,0 +1,24 @@
+{
+  "name": "cache-api",
+  "version": "1.0.0",
+  "description": "A cache api for storing and retrieving data from mongodb cache",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.mjs",
+    "test": "mocha --timeout 5000",
+    "start": "node index.mjs"
+  },
+  "author": "ubaidrbutt@outlook.com",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.7"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.3.2",
+    "nodemon": "^2.0.7"
+  }
+}
